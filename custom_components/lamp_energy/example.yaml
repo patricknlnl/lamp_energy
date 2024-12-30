@@ -1,0 +1,20 @@
+
+sensor:
+  - platform: lampen_verbruik
+input_text:
+  lampen_zonder_stroom:
+    name: "Lampen Zonder Stroom"
+    initial: ""
+    icon: mdi:light-off
+automation:
+  - alias: "Update Lampen Zonder Stroom Sensor"
+    trigger:
+      - platform: state
+        entity_id: input_text.lampen_zonder_stroom
+      - platform: time_pattern
+        minutes: /5
+    action:
+      - service: homeassistant.update_entity
+        target:
+          entity_id: sensor.lampen_zonder_stroom
+    
