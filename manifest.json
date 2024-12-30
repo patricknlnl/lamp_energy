@@ -1,11 +1,11 @@
 {
-    "domain": "lamp_energy",
-    "name": "Lamp Energy Sensor",
+    "domain": "lampen_verbruik",
+    "name": "Lampen Verbruik",
     "version": "1.0.0",
-    "documentation": "https://github.com/your-repo/lamp_energy",
+    "documentation": "https://github.com/your-repo/lampen_verbruik",
     "requirements": [],
     "dependencies": [],
     "codeowners": [
-        "@your-username"
+        "@your-github-username"
     ]
 }
