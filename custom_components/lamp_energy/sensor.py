@@ -26,15 +26,45 @@ class LampEnergySensor(SensorEntity):
         """Return the state of the sensor."""
         return self._state
 
-    async def async_update(self):
+    
+async def async_update(self):
+    """Fetch new state data for the sensor."""
+    # Retrieve all lights in the system
+    lampen = [
+        entity for entity in self.hass.states.all()
+        if entity.domain == 'light' and entity.state == 'on'
+    ]
+    
+    # Retrieve excluded lights
+    zonder_stroom = self.hass.states.get('input_text.lampen_zonder_stroom')
+    if zonder_stroom:
+        zonder_stroom = map(str.strip, zonder_stroom.state.split(','))
+    else:
+        zonder_stroom = []
+
+    totaal_verbruik = 0
+
+    for lamp in lampen:
+        lamp_entity = lamp.entity_id
+        brightness = lamp.attributes.get('brightness', 255)  # Default to 255 if not specified
+        watt_search = re.findall(r'([1-9][0-9]?|100)(?=\s?[wW](?:att)?)', lamp.name)
+        max_watt = float(watt_search[0]) if watt_search else 10
+
+        if lamp_entity not in zonder_stroom:
+            verbruik = (float(brightness) / 255) * max_watt
+            totaal_verbruik += verbruik
+
+    # Convert to kWh and round to 3 decimals
+    self._state = round(totaal_verbruik / 1000, 3)
+    
         """Fetch new state data for the sensor."""
         lamp_states = self.hass.states.all("light")
-        excluded_lamps = (
-            self.hass.states.get("input_text.excluded_lamps").state.split(",")
-            if self.hass.states.get("input_text.excluded_lamps")
+        zonder_stroom = (
+            self.hass.states.get("input_text.lampen_zonder_stroom").state.split(",")
+            if self.hass.states.get("input_text.lampen_zonder_stroom")
             else []
         )
-        total_consumption = 0
+        totaal_verbruik = 0
 
         for lamp in lamp_states:
             if lamp.state != "on":
@@ -44,8 +74,8 @@ class LampEnergySensor(SensorEntity):
             watt_search = re.findall(r"([1-9][0-9]?|100)(?=\s?[wW](?:att)?)", lamp.name)
             max_watt = float(watt_search[0]) if watt_search else 10
 
-            if lamp.entity_id not in excluded_lamps:
-                consumption = (brightness / 255) * max_watt
-                total_consumption += consumption
+            if lamp.entity_id not in zonder_stroom:
+                verbruik = (brightness / 255) * max_watt
+                totaal_verbruik += verbruik
 
-        self._state = round(total_consumption / 1000, 3)
+        self._state = round(totaal_verbruik / 1000, 3)
