@@ -1,7 +1,7 @@
+
 import logging
+from datetime import timedelta
 from homeassistant.components.sensor import SensorEntity
-from homeassistant.helpers.entity import Entity
-from homeassistant.util import dt as dt_util
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -10,8 +10,7 @@ SCAN_INTERVAL = timedelta(minutes=5)
 
 async def async_setup_platform(hass, config, async_add_entities, discovery_info=None):
     """Set up the Lamp Energy sensor."""
-    sensor = LampEnergySensor(hass)
-    async_add_entities([sensor], True)
+    async_add_entities([LampEnergySensor(hass)], True)
 
 class LampEnergySensor(SensorEntity):
     """Representation of a Lamp Energy sensor."""
@@ -20,22 +19,13 @@ class LampEnergySensor(SensorEntity):
         """Initialize the sensor."""
         self._hass = hass
         self._state = 0.0
-        self._unit_of_measurement = "kWh"
-
-    @property
-    def name(self):
-        """Return the name of the sensor."""
-        return "Lamp Energy Consumption"
+        self._attr_name = "Lamp Energy Consumption"
+        self._attr_unit_of_measurement = "kWh"
 
     @property
     def state(self):
         """Return the state of the sensor."""
         return self._state
-
-    @property
-    def unit_of_measurement(self):
-        """Return the unit of measurement."""
-        return self._unit_of_measurement
 
     async def async_update(self):
         """Update the sensor."""
@@ -46,15 +36,15 @@ class LampEnergySensor(SensorEntity):
                 brightness = state.attributes.get("brightness", 255)
                 watt_search = state.attributes.get("friendly_name", "").lower()
                 max_watt = 10  # Default wattage if not specified
+
                 if "w" in watt_search:
-                    watt_search = watt_search.split("w")[0]
                     try:
-                        max_watt = float(watt_search)
+                        max_watt = float(watt_search.split("w")[0])
                     except ValueError:
-                        pass
+                        _LOGGER.warning(f"Could not parse wattage from {watt_search}")
 
                 consumption = (brightness / 255) * max_watt
                 total_consumption += consumption
 
         self._state = round(total_consumption / 1000, 3)
-        _LOGGER.info(f"Total lamp energy consumption: {self._state} kWh")
+        _LOGGER.debug(f"Updated lamp energy consumption: {self._state} kWh")
