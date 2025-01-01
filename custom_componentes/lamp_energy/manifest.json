@@ -1,0 +1,10 @@
+{
+  "domain": "lamp_energy",
+  "name": "Lamp Energy",
+  "version": "1.0.0",
+  "documentation": "https://github.com/patricknlnl/lamp_energy",
+  "dependencies": [],
+  "codeowners": ["@patricknlnl"],
+  "requirements": [],
+  "iot_class": "local_polling"
+}
