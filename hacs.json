@@ -1,10 +1,7 @@
 {
-    "name": "Lamp Energy",
-    "content_in_root": false,
-    "domains": [
-        "sensor"
-    ],
-    "iot_class": "local_polling",
-    "render_readme": true,
-    "version": "1.0.0"
+  "name": "Lamp Energy Sensor",
+  "content_in_root": false,
+  "domains": ["sensor"],
+  "iot_class": "local_polling",
+  "render_readme": true
 }
