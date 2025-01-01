@@ -1,1 +1,0 @@
-"""The Lamp Energy integration."""

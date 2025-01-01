@@ -1,6 +1,0 @@
-{
-  "name": "Lamp Energy",
-  "domains": ["sensor", "automation"],
-  "homeassistant": "2023.1.0",
-  "render_readme": true
-}
